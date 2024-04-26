@@ -26,9 +26,6 @@ def main():
             api_key=azure_oai_key,
             api_version="2023-09-01-preview")
 
-        # Get the prompt
-        text = input('\nEnter a question:\n')
-
         # Configure your data source
         extension_config = dict(dataSources = [  
         { 
@@ -41,31 +38,40 @@ def main():
         }]
         )
 
-        # Send request to Azure OpenAI model
-        print("...Sending the following request to Azure OpenAI endpoint...")
-        print("Request: " + text + "\n")
+        while True:
+            # Get the prompt
+            input_text = input("\nEnter a question or type 'quit' to exit:\n")
+            if input_text.lower() == "quit":
+                break
+            if len(input_text) == 0:
+                print("Please submit a question.")
+                continue
 
-        response = client.chat.completions.create(
-            model = azure_oai_deployment,
-            temperature = 0.5,
-            max_tokens = 1000,
-            messages = [
-                {"role": "system", "content": "You are a helpful travel agent"},
-                {"role": "user", "content": text}
-            ],
-            extra_body = extension_config
-        )
+            # Send request to Azure OpenAI model
+            print("...Sending the following request to Azure OpenAI endpoint...")
+            print("Request: " + input_text + "\n")
 
-        # Print response
-        print("Response: " + response.choices[0].message.content + "\n")
+            response = client.chat.completions.create(
+                model = azure_oai_deployment,
+                temperature = 0.5,
+                max_tokens = 1000,
+                messages = [
+                    {"role": "system", "content": "You are a helpful travel agent"},
+                    {"role": "user", "content": input_text}
+                ],
+                extra_body = extension_config
+            )
 
-        if (show_citations):
-            # Print citations
-            print("Citations:")
-            citations = response.choices[0].message.context["messages"][0]["content"]
-            citation_json = json.loads(citations)
-            for c in citation_json["citations"]:
-                print("  Title: " + c['title'] + "\n    URL: " + c['url'])
+            # Print response
+            print("Response: " + response.choices[0].message.content + "\n")
+
+            if (show_citations):
+                # Print citations
+                print("Citations:")
+                citations = response.choices[0].message.context["messages"][0]["content"]
+                citation_json = json.loads(citations)
+                for c in citation_json["citations"]:
+                    print("  Title: " + c['title'] + "\n    URL: " + c['url'])
 
 
         
