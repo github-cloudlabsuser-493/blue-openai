@@ -27,9 +27,9 @@ def main():
             api_version="2023-09-01-preview")
 
         # Create a system message
-        system_message = """I am a helpfull AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
+        system_message = """I am a helpful AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
                 I will attempt to give references as often as possible.
-                I will include page numbers or other locations for figures, tables, charts, or other embeded facts when available. 
+                I will include page numbers or other locations for figures, tables, charts, or other embedded facts when available. 
                 """
 
         # Configure your data source
@@ -46,8 +46,8 @@ def main():
 
         while True:
             # Get the prompt
-            input_text = input("\nEnter a question or type 'quit' to exit:\n")
-            if input_text.lower() == "quit":
+            input_text = input("\nPlease enter a prompt or 'X' to exit:\n")
+            if input_text.lower() == "x":
                 break
             if len(input_text) == 0:
                 print("Please submit a question.")
@@ -59,7 +59,7 @@ def main():
 
             response = client.chat.completions.create(
                 model = azure_oai_deployment,
-                temperature = 0.5,
+                temperature = 0.7,
                 max_tokens = 1000,
                 messages = [
                     {"role": "system", "content": system_message},
