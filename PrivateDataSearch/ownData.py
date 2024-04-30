@@ -26,6 +26,12 @@ def main():
             api_key=azure_oai_key,
             api_version="2023-09-01-preview")
 
+        # Create a system message
+        system_message = """I am a helpfull AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
+                I will attempt to give references as often as possible.
+                I will include page numbers or other locations for figures, tables, charts, or other embeded facts when available. 
+                """
+
         # Configure your data source
         extension_config = dict(dataSources = [  
         { 
@@ -56,7 +62,7 @@ def main():
                 temperature = 0.5,
                 max_tokens = 1000,
                 messages = [
-                    {"role": "system", "content": "You are a helpful travel agent"},
+                    {"role": "system", "content": system_message},
                     {"role": "user", "content": input_text}
                 ],
                 extra_body = extension_config
