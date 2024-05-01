@@ -5,6 +5,64 @@ from dotenv import load_dotenv
 # Add OpenAI import
 from openai import AzureOpenAI
 
+# Create a system message
+default_system = """I am a helpful AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
+        I will attempt to give references as often as possible.
+        I will include page numbers or other locations for figures, tables, charts, or other embedded facts when available. 
+        """
+system_message = default_system
+
+def update_role():
+    global system_message
+    #Wipe current message
+    system_message = default_system
+    while True:
+        user_role = input("""\nPlease enter the number corresponding to your role.\n
+            1: Engineer\n
+            2: Manager\n
+            3: Technical Writer\n
+            4: Executive\n
+            5: Other\n""")
+        
+        if user_role == '1':
+            system_message += " I will tailor my messages to an engineer who is highly technical and cares about safety concerns."
+            break
+        elif user_role == '2':
+            system_message += " I will tailor my messages to a manager who wants a high level overview especially where timelines are applicable and who is not overly technical."
+            break
+        elif user_role == '3':
+            system_message += " I will tailor my messages to a technical writer who is technical enough to convey information to others about aircrafts."
+            break
+        elif user_role == '4':
+            system_message += " I will tailor my messages to an executive who cares about the big picture and has an eye on the future of aviation. "
+            break
+        elif user_role == '5':
+            system_message = default_system
+            break
+        else: 
+            print("Invalid input\n")
+
+def check_for_exit(input_text):
+    if input_text.lower() == "x":
+        exit(1)
+
+def no_input(input_text):
+    return len(input_text) == 0
+
+def role_change(input_text):
+    if input_text.lower() == "r":
+        update_role()
+        print("Role updated.\n")
+        return True
+    return False
+
+def valid_prompt_input(input_text):
+    if no_input(input_text):
+        print("Please enter valid input.\n")
+        return False
+    check_for_exit(input_text)
+    return True
+
 def main(): 
         
     try:
@@ -26,12 +84,6 @@ def main():
             api_key=azure_oai_key,
             api_version="2023-09-01-preview")
 
-        # Create a system message
-        system_message = """I am a helpful AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
-                I will attempt to give references as often as possible.
-                I will include page numbers or other locations for figures, tables, charts, or other embedded facts when available. 
-                """
-
         # Configure your data source
         extension_config = dict(dataSources = [  
         { 
@@ -44,13 +96,18 @@ def main():
         }]
         )
 
+
+        print("\nHello, I'm Blue, your personal assistant for Airplane Co. XYZ.\n")
+        
+        update_role()
+
         while True:
             # Get the prompt
-            input_text = input("\nPlease enter a prompt or 'X' to exit:\n")
-            if input_text.lower() == "x":
-                break
-            if len(input_text) == 0:
-                print("Please submit a question.")
+            input_text = input("\nPlease enter a prompt, 'R' to change role, or 'X' to exit:\n")
+
+            if not valid_prompt_input(input_text):
+                continue
+            if role_change(input_text):
                 continue
 
             # Send request to Azure OpenAI model
