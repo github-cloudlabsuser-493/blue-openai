@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from openai import AzureOpenAI
 
 # Create a system message
-default_system = """I am a helpful AI chatbot named Blue. I specialize in providing information on engineering documents about airplanes. 
+default_system = """I am a helpful AI chatbot named Blue for a company called BlueAirCo that builds airplanes. I specialize in providing information on engineering documents about airplanes. 
         I will attempt to give references as often as possible.
         I will include page numbers or other locations for figures, tables, charts, or other embedded facts when available. 
         """
@@ -97,7 +97,7 @@ def main():
         )
 
 
-        print("\nHello, I'm Blue, your personal assistant for Airplane Co. XYZ.\n")
+        print("\nHello, I'm Blue, your personal assistant for BlueAirCo.\n")
         
         update_role()
 
