@@ -165,13 +165,13 @@ def main():
             # Print response
             print("Response: " + response + "\n")
 
-            if (show_citations):
-                # Print citations
-                print("Citations:")
-                citations = response.choices[0].message.context["messages"][0]["content"]
-                citation_json = json.loads(citations)
-                for c in citation_json["citations"]:
-                    print("  Title: " + c['title'] + "\n    URL: " + c['url'])
+            # if (show_citations):
+            #     # Print citations
+            #     print("Citations:")
+            #     citations = response.choices[0].message.context["messages"][0]["content"]
+            #     citation_json = json.loads(citations)
+            #     for c in citation_json["citations"]:
+            #         print("  Title: " + c['title'] + "\n    URL: " + c['url'])
 
 
         
