@@ -20,8 +20,8 @@ def update_role():
         user_role = input("""\nPlease enter the number corresponding to your role.\n
             1: Engineer\n
             2: Manager\n
-            3: Technical Writer\n
-            4: Executive\n
+            3: Executive\n
+            4: Public Relations\n
             5: Other\n""")
         
         if user_role == '1':
@@ -31,16 +31,17 @@ def update_role():
             system_message += " I will tailor my messages to a manager who wants a high level overview especially where timelines are applicable and who is not overly technical."
             break
         elif user_role == '3':
-            system_message += " I will tailor my messages to a technical writer who is technical enough to convey information to others about aircrafts."
+            system_message += " I will tailor my messages to an executive who cares about the big picture and has an eye on the future of aviation. "
             break
         elif user_role == '4':
-            system_message += " I will tailor my messages to an executive who cares about the big picture and has an eye on the future of aviation. "
+            system_message += " I will tailor my messages to a public relations employee who needs to communicate to the general public in a positive and reassuring manner. "
             break
         elif user_role == '5':
             system_message = default_system
             break
         else: 
             print("Invalid input\n")
+
 
 def check_for_exit(input_text):
     if input_text.lower() == "x":
