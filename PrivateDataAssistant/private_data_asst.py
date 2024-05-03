@@ -22,7 +22,8 @@ def update_role():
             2: Manager\n
             3: Technical Writer\n
             4: Executive\n
-            5: Other\n""")
+            5: Public Relations\n
+            6: Other\n""")
         
         if user_role == '1':
             system_message += " I will tailor my messages to an engineer who is highly technical and cares about safety concerns."
@@ -37,6 +38,9 @@ def update_role():
             system_message += " I will tailor my messages to an executive who cares about the big picture and has an eye on the future of aviation. "
             break
         elif user_role == '5':
+            system_message += " I will tailor my messages to a public relations employee who needs to communicate to the general public in a positive and reassuring manner. "
+            break
+        elif user_role == '6':
             system_message = default_system
             break
         else: 
