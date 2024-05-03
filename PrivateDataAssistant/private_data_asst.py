@@ -10,10 +10,13 @@ default_system = """I am a helpful AI chatbot named Blue for a company called Bl
         I will attempt to give references as often as possible.
         I will include page numbers or other locations for figures, tables, charts, or other embedded facts when available. 
         """
+default_role = "engineer"
 system_message = default_system
+role = default_role
 
 def update_role():
     global system_message
+    global role
     #Wipe current message
     system_message = default_system
     while True:
@@ -21,26 +24,64 @@ def update_role():
             1: Engineer\n
             2: Manager\n
             3: Executive\n
-            4: Public Relations\n
-            5: Other\n""")
+            4: Public Relations\n\n""")
         
         if user_role == '1':
             system_message += " I will tailor my messages to an engineer who is highly technical and cares about safety concerns."
+            role = "engineer"
             break
         elif user_role == '2':
             system_message += " I will tailor my messages to a manager who wants a high level overview especially where timelines are applicable and who is not overly technical."
+            role = "manager"
             break
         elif user_role == '3':
             system_message += " I will tailor my messages to an executive who cares about the big picture and has an eye on the future of aviation. "
+            role = "executive"
             break
         elif user_role == '4':
             system_message += " I will tailor my messages to a public relations employee who needs to communicate to the general public in a positive and reassuring manner. "
-            break
-        elif user_role == '5':
-            system_message = default_system
+            role = "public relations"
             break
         else: 
-            print("Invalid input\n")
+            print("Please enter valid input.\n")
+
+def assist_with_onboarding():
+    global role
+    input_text = input("\nAre you new to BlueAirCo? Please type 'Y' for yes or 'N' for no.\n")
+
+    if (input_text.lower() == 'y'):
+        input_text = input("\nWould you like assistance with onboarding? Please type 'Y' for yes or 'N' for no.\n")
+        if(input_text.lower() == 'y'):
+            print("\nAbsolutely, what would you like to know?\n")
+            while True:
+                input_text = input("""\n
+                                1: Tell me about BlueAirCo
+                                2: Tell me about my role
+                                3: List key resources and tools available to me
+                                4: Tell me about BlueAirCo's company culture
+                                5: Something else
+                                6: I'm done with onboarding\n\n""")
+                if input_text in ['1', '2', '3', '4']:
+                    prompt = {
+                        '1': "Tell me about BlueAirCo.",
+                        '2': "Tell me about my role as " + role,
+                        '3': "List key resources and tools available to me as " + role,
+                        '4': "Tell me about BlueAirCo's company culture.",
+                    }[input_text]
+                elif input_text == '5':
+                    input_text = input("What would you like to know?\n")
+                elif input_text == '6':
+                    print("Onboarding complete.\n")
+                    return
+                else:
+                    return
+                prompt += " Reference the BlueAirCo onboarding document specific to my role."
+                response = send_request(prompt)
+                print("Response: " + response + "\n")
+        else:
+            print("Bypassing onboarding.\n")
+    else:
+        print("Welcome back!")
 
 
 def check_for_exit(input_text):
@@ -65,6 +106,9 @@ def valid_prompt_input(input_text):
     return True
 
 def main(): 
+    global azure_oai_deployment
+    global client
+    global extension_config
         
     try:
         # Flag to show citations
@@ -97,10 +141,10 @@ def main():
         }]
         )
 
-
         print("\nHello, I'm Blue, your personal assistant for BlueAirCo.\n")
         
         update_role()
+        assist_with_onboarding()
 
         while True:
             # Get the prompt
@@ -115,19 +159,10 @@ def main():
             print("...Sending the following request to Azure OpenAI endpoint...")
             print("Request: " + input_text + "\n")
 
-            response = client.chat.completions.create(
-                model = azure_oai_deployment,
-                temperature = 0.7,
-                max_tokens = 1000,
-                messages = [
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": input_text}
-                ],
-                extra_body = extension_config
-            )
+            response = send_request(input_text)
 
             # Print response
-            print("Response: " + response.choices[0].message.content + "\n")
+            print("Response: " + response + "\n")
 
             if (show_citations):
                 # Print citations
@@ -141,6 +176,23 @@ def main():
         
     except Exception as ex:
         print(ex)
+
+def send_request(input_text):
+    global azure_oai_deployment
+    global client
+    global extension_config
+    response = client.chat.completions.create(
+                model = azure_oai_deployment,
+                temperature = 0.7,
+                max_tokens = 1000,
+                messages = [
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": input_text}
+                ],
+                extra_body = extension_config
+            )
+    
+    return response.choices[0].message.content
 
 
 if __name__ == '__main__': 
