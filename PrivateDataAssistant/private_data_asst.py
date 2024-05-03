@@ -74,7 +74,8 @@ def assist_with_onboarding():
                     print("Onboarding complete.\n")
                     return
                 else:
-                    return
+                    print("Please enter valid input.\n")
+                    continue
                 prompt += " Reference the BlueAirCo onboarding document specific to my role."
                 response = send_request(prompt)
                 print("Response: " + response + "\n")
