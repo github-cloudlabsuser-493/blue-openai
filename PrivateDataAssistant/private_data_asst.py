@@ -49,7 +49,7 @@ def update_role():
 def assist_with_onboarding():
     global role
     input_text = input("\nAre you new to BlueAirCo? Please type 'Y' for yes or any key for no.\n")
-    role_context = " as " + role + ". Solely reference the BlueAirCo onboarding document specific to my " + role + " role."
+    role_context = " The response should be specific to my role as " + role + ". Reference the BlueAirCo onboarding document specific for " + role + ". Do not reference onboarding documents specific to other roles."
 
     if (input_text.lower() == 'y'):
         input_text = input("\nWould you like assistance with onboarding? Please enter 'Y' for yes or any key for no.\n")
@@ -66,12 +66,13 @@ def assist_with_onboarding():
                 if input_text in ['1', '2', '3', '4']:
                     prompt = {
                         '1': "In 100 words or fewer tell me about BlueAirCo.",
-                        '2': "Tell me about my role" + role_context,
-                        '3': "List key resources and tools available to me" + role_context,
+                        '2': "Tell me about my role." + role_context,
+                        '3': "List key resources and tools available to me." + role_context,
                         '4': "In 100 words or fewer tell me about BlueAirCo's company culture.",
                     }[input_text]
                 elif input_text == '5':
                     input_text = input("What would you like to know?\n")
+                    prompt = input_text + role_context
                 elif input_text == '6':
                     print("Onboarding complete.\n")
                     return
@@ -181,7 +182,7 @@ def send_request(input_text):
 
     response = client.chat.completions.create(
                 model = azure_oai_deployment,
-                temperature = 0.5,
+                temperature = 0.7,
                 max_tokens = 1000,
                 messages = [
                     {"role": "system", "content": system_message},
