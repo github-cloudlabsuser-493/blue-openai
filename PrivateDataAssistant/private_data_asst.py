@@ -48,6 +48,7 @@ def update_role():
 def assist_with_onboarding():
     global role
     input_text = input("\nAre you new to BlueAirCo? Please type 'Y' for yes or any key for no.\n")
+    role_context = " as " + role + ". Solely reference the BlueAirCo onboarding document specific to my " + role + " role."
 
     if (input_text.lower() == 'y'):
         input_text = input("\nWould you like assistance with onboarding? Please enter 'Y' for yes or any key for no.\n")
@@ -64,8 +65,8 @@ def assist_with_onboarding():
                 if input_text in ['1', '2', '3', '4']:
                     prompt = {
                         '1': "In 100 words or fewer tell me about BlueAirCo.",
-                        '2': "Tell me about my role as " + role,
-                        '3': "List key resources and tools available to me as " + role,
+                        '2': "Tell me about my role" + role_context,
+                        '3': "List key resources and tools available to me" + role_context,
                         '4': "In 100 words or fewer tell me about BlueAirCo's company culture.",
                     }[input_text]
                 elif input_text == '5':
@@ -76,7 +77,6 @@ def assist_with_onboarding():
                 else:
                     print("Please enter valid input.\n")
                     continue
-                prompt += " Reference the BlueAirCo onboarding document specific to my " + role + " role." 
                 print_response(send_request(prompt))
         else:
             print("Bypassing onboarding.\n")
@@ -114,7 +114,8 @@ def print_response(response):
             citations = response.context["messages"][0]["content"]
             citation_json = json.loads(citations)
             for c in citation_json["citations"]:
-                print("  Title: " + c['title']) 
+                if c['title'] is not None:
+                    print("  Title: " + c['title'])
     except Exception as ex:
         print("Error retrieving references:", ex)
 
@@ -177,7 +178,7 @@ def send_request(input_text):
 
     response = client.chat.completions.create(
                 model = azure_oai_deployment,
-                temperature = 0.7,
+                temperature = 0.5,
                 max_tokens = 1000,
                 messages = [
                     {"role": "system", "content": system_message},
