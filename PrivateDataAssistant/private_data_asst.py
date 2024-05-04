@@ -13,6 +13,7 @@ default_system = """I am a helpful AI chatbot named Blue for a company called Bl
 default_role = "engineer"
 system_message = default_system
 role = default_role
+show_references = False
 
 def update_role():
     global system_message
@@ -106,18 +107,20 @@ def valid_prompt_input(input_text):
     return True
 
 def print_response(response):
+    global show_references
     response_content = response.content
     print("Response: " + response_content + "\n")
-    try:
-        if not response_content.__contains__("information is not available"):
-            print("References:")
-            citations = response.context["messages"][0]["content"]
-            citation_json = json.loads(citations)
-            for c in citation_json["citations"]:
-                if c['title'] is not None:
-                    print("  Title: " + c['title'])
-    except Exception as ex:
-        print("Error retrieving references:", ex)
+    if show_references:
+        try:
+            if not response_content.__contains__("information is not available"):
+                print("References:")
+                citations = response.context["messages"][0]["content"]
+                citation_json = json.loads(citations)
+                for c in citation_json["citations"]:
+                    if c['title'] is not None:
+                        print("  Title: " + c['title'])
+        except Exception as ex:
+            print("Error retrieving references:", ex)
 
 def main(): 
     global azure_oai_deployment
