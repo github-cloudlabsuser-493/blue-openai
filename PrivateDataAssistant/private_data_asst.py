@@ -106,15 +106,17 @@ def valid_prompt_input(input_text):
     return True
 
 def print_response(response):
-    print("Response: " + response.choices[0].message.content + "\n")
-
-    #only show citations if they exist
-    #put in try catch
-    # print("Citations:")
-    # citations = response.choices[0].message.context["messages"][0]["content"]
-    # citation_json = json.loads(citations)
-    # for c in citation_json["citations"]:
-    #     print("  Title: " + c['title']) 
+    response_content = response.content
+    print("Response: " + response_content + "\n")
+    try:
+        if not response_content.__contains__("information is not available"):
+            print("References:")
+            citations = response.context["messages"][0]["content"]
+            citation_json = json.loads(citations)
+            for c in citation_json["citations"]:
+                print("  Title: " + c['title']) 
+    except Exception as ex:
+        print("Error retrieving references:", ex)
 
 def main(): 
     global azure_oai_deployment
@@ -173,7 +175,7 @@ def send_request(input_text):
     global client
     global extension_config
 
-    return client.chat.completions.create(
+    response = client.chat.completions.create(
                 model = azure_oai_deployment,
                 temperature = 0.7,
                 max_tokens = 1000,
@@ -183,6 +185,7 @@ def send_request(input_text):
                 ],
                 extra_body = extension_config
             )
+    return response.choices[0].message
     
 if __name__ == '__main__': 
     main()
