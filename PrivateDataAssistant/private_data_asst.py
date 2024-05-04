@@ -39,18 +39,18 @@ def update_role():
             role = "executive"
             break
         elif user_role == '4':
-            system_message += " I will tailor my messages to a public relations employee who needs to communicate to the general public in a positive and reassuring manner. "
-            role = "public relations"
+            system_message += " I will tailor my messages to a public relations specialist who needs to communicate to the general public in a positive and reassuring manner. "
+            role = "public relations specialist"
             break
         else: 
             print("Please enter valid input.\n")
 
 def assist_with_onboarding():
     global role
-    input_text = input("\nAre you new to BlueAirCo? Please type 'Y' for yes or 'N' for no.\n")
+    input_text = input("\nAre you new to BlueAirCo? Please type 'Y' for yes or any key for no.\n")
 
     if (input_text.lower() == 'y'):
-        input_text = input("\nWould you like assistance with onboarding? Please type 'Y' for yes or 'N' for no.\n")
+        input_text = input("\nWould you like assistance with onboarding? Please enter 'Y' for yes or any key for no.\n")
         if(input_text.lower() == 'y'):
             print("\nAbsolutely, what would you like to know?\n")
             while True:
@@ -63,10 +63,10 @@ def assist_with_onboarding():
                                 6: I'm done with onboarding\n\n""")
                 if input_text in ['1', '2', '3', '4']:
                     prompt = {
-                        '1': "Tell me about BlueAirCo.",
+                        '1': "In 100 words or fewer tell me about BlueAirCo.",
                         '2': "Tell me about my role as " + role,
                         '3': "List key resources and tools available to me as " + role,
-                        '4': "Tell me about BlueAirCo's company culture.",
+                        '4': "In 100 words or fewer tell me about BlueAirCo's company culture.",
                     }[input_text]
                 elif input_text == '5':
                     input_text = input("What would you like to know?\n")
@@ -76,9 +76,8 @@ def assist_with_onboarding():
                 else:
                     print("Please enter valid input.\n")
                     continue
-                prompt += " Reference the BlueAirCo onboarding document specific to my role."
-                response = send_request(prompt)
-                print("Response: " + response + "\n")
+                prompt += " Reference the BlueAirCo onboarding document specific to my " + role + " role." 
+                print_response(send_request(prompt))
         else:
             print("Bypassing onboarding.\n")
     else:
@@ -106,15 +105,23 @@ def valid_prompt_input(input_text):
     check_for_exit(input_text)
     return True
 
+def print_response(response):
+    print("Response: " + response.choices[0].message.content + "\n")
+
+    #only show citations if they exist
+    #put in try catch
+    # print("Citations:")
+    # citations = response.choices[0].message.context["messages"][0]["content"]
+    # citation_json = json.loads(citations)
+    # for c in citation_json["citations"]:
+    #     print("  Title: " + c['title']) 
+
 def main(): 
     global azure_oai_deployment
     global client
     global extension_config
         
     try:
-        # Flag to show citations
-        show_citations = False
-
         # Get configuration settings 
         load_dotenv()
         azure_oai_endpoint = os.getenv("AZURE_OAI_ENDPOINT")
@@ -156,24 +163,7 @@ def main():
             if role_change(input_text):
                 continue
 
-            # Send request to Azure OpenAI model
-            print("...Sending the following request to Azure OpenAI endpoint...")
-            print("Request: " + input_text + "\n")
-
-            response = send_request(input_text)
-
-            # Print response
-            print("Response: " + response + "\n")
-
-            # if (show_citations):
-            #     # Print citations
-            #     print("Citations:")
-            #     citations = response.choices[0].message.context["messages"][0]["content"]
-            #     citation_json = json.loads(citations)
-            #     for c in citation_json["citations"]:
-            #         print("  Title: " + c['title'] + "\n    URL: " + c['url'])
-
-
+            print_response(send_request(input_text))
         
     except Exception as ex:
         print(ex)
@@ -182,7 +172,8 @@ def send_request(input_text):
     global azure_oai_deployment
     global client
     global extension_config
-    response = client.chat.completions.create(
+
+    return client.chat.completions.create(
                 model = azure_oai_deployment,
                 temperature = 0.7,
                 max_tokens = 1000,
@@ -193,9 +184,6 @@ def send_request(input_text):
                 extra_body = extension_config
             )
     
-    return response.choices[0].message.content
-
-
 if __name__ == '__main__': 
     main()
 
