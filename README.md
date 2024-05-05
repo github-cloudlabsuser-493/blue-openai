@@ -4,9 +4,9 @@ Ensure the .env file is populated with secrets corresponding to OpenAI and Azure
 
 ## Run the application in Terminal:
 
-cd PrivateDataAssistant/private_data_asst.py
-pip install python-dotenv
-pip install openai==1.13.3
+cd PrivateDataAssistant/private_data_asst.py \
+pip install python-dotenv \
+pip install openai==1.13.3 \
 python private_data_asst.py
 
 ### The above assistant only bases responses off of private data in Azure storage. We've also included an assistant to pull public data for your convenience:
