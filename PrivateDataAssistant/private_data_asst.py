@@ -28,7 +28,7 @@ def update_role():
             4: Public Relations\n\n""")
         
         if user_role == '1':
-            system_message += " I will tailor my messages to an engineer who is highly technical and cares about safety concerns."
+            system_message += " I will tailor my messages to an engineer who wants detailed technical information and cares about safety concerns."
             role = "engineer"
             break
         elif user_role == '2':
@@ -94,9 +94,10 @@ def no_input(input_text):
     return len(input_text) == 0
 
 def role_change(input_text):
+    global role
     if input_text.lower() == "r":
         update_role()
-        print("Role updated.\n")
+        print("Role updated to " + role + ".\n")
         return True
     return False
 
@@ -122,6 +123,17 @@ def print_response(response):
                         print("  Title: " + c['title'])
         except Exception as ex:
             print("Error retrieving references:", ex)
+
+def toggle_references(input_text):
+    global show_references
+    if input_text.lower() == "t":
+        show_references = not show_references
+        if show_references:
+            print("References will now be shown.\n")
+        else:
+            print("References will no longer be shown.\n")
+        return True
+    return False
 
 def main(): 
     global azure_oai_deployment
@@ -163,13 +175,16 @@ def main():
 
         while True:
             # Get the prompt
-            input_text = input("\nPlease enter a prompt, 'R' to change role, or 'X' to exit:\n")
+            input_text = input("\nPlease enter a prompt, 'R' to change role, 'T' to toggle references, or 'X' to exit:\n")
 
             if not valid_prompt_input(input_text):
                 continue
             if role_change(input_text):
                 continue
+            if toggle_references(input_text):
+                continue
 
+            # Send the request with the user's prompt
             print_response(send_request(input_text))
         
     except Exception as ex:
