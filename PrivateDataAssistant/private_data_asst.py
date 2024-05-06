@@ -111,7 +111,7 @@ def valid_prompt_input(input_text):
 def print_response(response):
     global show_references
     response_content = response.content
-    print("Response: " + response_content + "\n")
+    print("\nResponse: " + response_content + "\n")
     if show_references:
         try:
             if not response_content.__contains__("information is not available"):
@@ -122,7 +122,7 @@ def print_response(response):
                     if c['title'] is not None:
                         print("  Title: " + c['title'])
         except Exception as ex:
-            print("Error retrieving references:", ex)
+            print("\nError retrieving references:", ex)
 
 def toggle_references(input_text):
     global show_references
